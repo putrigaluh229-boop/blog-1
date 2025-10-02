@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catatan Nely – Blog Pastel</title>
+
+<!-- Font Bubblegum Sans -->
+<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #fef6ff;
+    --primary: #ffd1dc;     /* pastel pink */
+    --secondary: #c1f0f6;   /* pastel biru muda */
+    --accent: #f6c1e1;      /* pastel ungu muda */
+    --card: rgba(255,255,255,0.9);
+    --text: #5b3a4c;
+    --shadow: rgba(0,0,0,0.15);
+  }
+
+  *{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+  }
+
+  body{
+    font-family:'Bubblegum Sans',cursive;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  header{
+    background:linear-gradient(90deg,var(--primary),var(--accent),var(--secondary));
+    padding:20px 40px;
+    box-shadow:0 4px 10px var(--shadow);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+
+  header h1{
+    font-size:2.5rem;
+    color:#5b3a4c;
+  }
+
+  nav a{
+    margin-left:20px;
+    text-decoration:none;
+    color:#5b3a4c;
+    font-size:1.2rem;
+    transition:0.3s;
+  }
+
+  nav a:hover{
+    color:#9c4d7c;
+  }
+
+  main{
+    max-width:1000px;
+    margin:20px auto;
+    padding:20px;
+    flex:1;
+  }
+
+  .search-bar{
+    margin-bottom:20px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .search-bar input{
+    width:80%;
+    padding:10px 15px;
+    font-size:1rem;
+    border:2px solid var(--accent);
+    border-radius:25px;
+    outline:none;
+  }
+
+  .blog-form{
+    background:var(--card);
+    padding:20px;
+    border-radius:25px;
+    box-shadow:0 4px 12px var(--shadow);
+    margin-bottom:25px;
+  }
+
+  .blog-form input, .blog-form textarea{
+    width:100%;
+    padding:10px;
+    margin-bottom:15px;
+    border:2px solid var(--secondary);
+    border-radius:20px;
+    font-size:1rem;
+    font-family:'Bubblegum Sans',cursive;
+    outline:none;
+  }
+
+  .blog-form button{
+    padding:10px 20px;
+    background:var(--accent);
+    border:none;
+    border-radius:20px;
+    font-size:1rem;
+    cursor:pointer;
+    transition:0.3s;
+  }
+
+  .blog-form button:hover{
+    background:#f49ac2;
+    transform:scale(1.05);
+  }
+
+  .posts{
+    display:grid;
+    gap:20px;
+  }
+
+  .post{
+    background:var(--card);
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 3px 10px var(--shadow);
+    transition:0.3s;
+  }
+
+  .post:hover{
+    transform:scale(1.02);
+  }
+
+  .post h2{
+    color:#9c4d7c;
+    margin-bottom:10px;
+  }
+
+  .post p{
+    font-size:1rem;
+    margin-bottom:10px;
+  }
+
+  .post small{
+    display:block;
+    font-size:0.8rem;
+    color:#888;
+    margin-bottom:10px;
+  }
+
+  .post button{
+    margin-right:10px;
+    padding:5px 10px;
+    border:none;
+    border-radius:15px;
+    font-size:0.9rem;
+    cursor:pointer;
+    transition:0.3s;
+  }
+
+  .like-btn{ background:#ffe1e6; }
+  .like-btn:hover{ background:#ffccd6; }
+  .edit-btn{ background:#c1f0f6; }
+  .edit-btn:hover{ background:#9de0ea; }
+  .delete-btn{ background:#f6c1e1; }
+  .delete-btn:hover{ background:#f1a3d4; }
+
+  footer{
+    background:var(--primary);
+    text-align:center;
+    padding:15px;
+    font-size:0.9rem;
+    box-shadow:0 -3px 8px var(--shadow);
+  }
+
+  @media(max-width:600px){
+    header{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    nav a{
+      margin:5px 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌸 Catatan Nely 🌸</h1>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Kategori</a>
+    <a href="#">Tentang</a>
+  </nav>
+</header>
+
+<main>
+  <!-- Fitur Search -->
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="🔍 Cari artikel...">
+  </div>
+
+  <!-- Form Post Baru -->
+  <div class="blog-form">
+    <h2>Tulis Artikel Baru</h2>
+    <input type="text" id="titleInput" placeholder="Judul artikel...">
+    <textarea id="contentInput" rows="4" placeholder="Tulis isi artikel di sini..."></textarea>
+    <button onclick="addPost()">Tambah Artikel</button>
+  </div>
+
+  <!-- List Artikel -->
+  <div class="posts" id="postsContainer">
+    <!-- Artikel akan muncul di sini -->
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Catatan Nely | Blog Pastel
+</footer>
+
+<script>
+  let posts = JSON.parse(localStorage.getItem('nelyPosts')) || [];
+
+  function savePosts(){
+    localStorage.setItem('nelyPosts', JSON.stringify(posts));
+  }
+
+  function renderPosts(filter=""){
+    const container = document.getElementById('postsContainer');
+    container.innerHTML = "";
+    const filtered = posts.filter(p => 
+      p.title.toLowerCase().includes(filter.toLowerCase()) || 
+      p.content.toLowerCase().includes(filter.toLowerCase())
+    );
+
+    filtered.forEach((post,index)=>{
+      const div = document.createElement('div');
+      div.className = 'post';
+      div.innerHTML = `
+        <h2>${post.title}</h2>
+        <small>🗓 ${post.date}</small>
+        <p>${post.content}</p>
+        <p>❤️ ${post.likes} suka</p>
+        <button class="like-btn" onclick="likePost(${index})">❤️ Suka</button>
+        <button class="edit-btn" onclick="editPost(${index})">✏️ Edit</button>
+        <button class="delete-btn" onclick="deletePost(${index})">🗑 Hapus</button>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function addPost(){
+    const title = document.getElementById('titleInput').value.trim();
+    const content = document.getElementById('contentInput').value.trim();
+    if(!title || !content) return alert("Judul dan isi tidak boleh kosong!");
+    const newPost = {
+      title,
+      content,
+      date: new Date().toLocaleString(),
+      likes:0
+    };
+    posts.unshift(newPost);
+    savePosts();
+    renderPosts();
+    document.getElementById('titleInput').value="";
+    document.getElementById('contentInput').value="";
+  }
+
+  function deletePost(index){
+    if(confirm("Yakin ingin menghapus artikel ini?")){
+      posts.splice(index,1);
+      savePosts();
+      renderPosts();
+    }
+  }
+
+  function editPost(index){
+    const newTitle = prompt("Ubah Judul:", posts[index].title);
+    if(newTitle===null) return;
+    const newContent = prompt("Ubah Isi:", posts[index].content);
+    if(newContent===null) return;
+    posts[index].title = newTitle;
+    posts[index].content = newContent;
+    savePosts();
+    renderPosts();
+  }
+
+  function likePost(index){
+    posts[index].likes++;
+    savePosts();
+    renderPosts();
+  }
+
+  document.getElementById('searchInput').addEventListener('input', (e)=>{
+    renderPosts(e.target.value);
+  });
+
+  // Render awal
+  renderPosts();
+</script>
+
+</body>
+</html>
